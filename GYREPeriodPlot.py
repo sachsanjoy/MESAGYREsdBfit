@@ -56,7 +56,7 @@ class sdBMESAGYRE():
         return pt[:10],ptz2[:10],trz2[:10]
 
 if __name__=="__main__":
-    Star = 'KIC11179657' #'KIC11179657' #'KIC2991403'# 'B4'#'B3' # #
+    Star = 'KIC2991403' #'KIC11179657' #'KIC2991403'# 'B4'#'B3' # #
 
     if Star=='B3':
         #B3 model dictionary
@@ -146,80 +146,34 @@ if __name__=="__main__":
     teff=data['teff']
     logg=data['logg']
 
-    fig, ax1 = plt.subplots()
+    fitdata=pd.read_csv(Target['Name']+'_output/'+Target['Name']+'_seismicfit.csv')
+    print(fitdata.columns)
+    PeriodCols = fitdata.columns.to_list()[16:]
+    print(PeriodCols)
 
-    ax1.plot(teff,logg,'.k',markersize=0.1)
-    for i in ModelDict:
-        CustomPeriod = ModelDict[i]
-        sdBObj = sdBMESAGYRE(Target,CustomPeriodList=CustomPeriod,NModels=1000,HowBad=150)
-        pt,ptz,trz = sdBObj.CheckModels()
-        ax1.plot(trz.teff,trz.logg,'ow',markeredgecolor='black') #unconstrained
-        
-    if Star == 'B3':
-        ax1.set_xlim([24.6,22.59])
-        ax1.set_ylim([5.07, 5.58])  
-        obsTeff = 23.540
-        obsTefferr = 0.210
-        obslogg = 5.311
-        obsloggerr = 0.035 
-        ax1.errorbar(obsTeff,obslogg,xerr=obsTefferr,yerr=obsloggerr,fmt='o',color='k',markersize=8,capthick=0.5,capsize=10,label='_nolegend_',alpha=0.6)
-    elif Star == 'B4':
-        ax1.set_xlim([26.38,24.31])
-        ax1.set_ylim([5.2, 5.72])    
-        obsTeff = 25.290
-        obsTefferr = 0.300
-        obslogg = 5.510
-        obsloggerr = 0.043 
-        ax1.errorbar(obsTeff,obslogg,xerr=obsTefferr,yerr=obsloggerr,fmt='o',color='k',markersize=8,capthick=0.5,capsize=10,label='_nolegend_',alpha=0.6)
-    elif Star == 'KIC2991403': 
-        ax1.set_xlim([ 26.0, 28.35])
-        ax1.set_ylim([5.3,5.79])    
-        obsTeff = 27.300
-        obsTefferr = 0.200
-        obslogg = 5.430
-        obsloggerr = 0.03 
-        ax1.errorbar(obsTeff,obslogg,xerr=obsTefferr,yerr=obsloggerr,fmt='o',color='k',markersize=8,capthick=0.5,capsize=10,label='_nolegend_',alpha=0.6)
+    #Unique model selection
+    if Star == 'KIC2991403':
+        ModelNumber = 'model5' #model4,
+        SelectedModel = fitdata[(fitdata['mi']==1.70)&(fitdata['z']==0.010)&(fitdata['menv']==0.0010)&(fitdata['yc']==0.1)]
     elif Star == 'KIC11179657':
-        ax1.set_xlim([23.77,26.9])
-        ax1.set_ylim([5.0, 5.46])    
-        obsTeff = 26.0
-        obsTefferr = 0.8
-        obslogg = 5.14
-        obsloggerr = 0.13 
-        ax1.errorbar(obsTeff,obslogg,xerr=obsTefferr,yerr=obsloggerr,fmt='o',color='k',markersize=8,capthick=0.5,capsize=10,label='_nolegend_',alpha=0.6)
-    
-    ax1.set_xlabel('T$\mathregular{_{eff}}$ [kK]')
-    ax1.set_ylabel('$\log$(g/cm s$^2$)')
-    ax1.invert_xaxis()
-    ax1.invert_yaxis()    
-    plt.savefig(f'{Star}ConSolnZoom.png')
-    plt.savefig(f'{Star}ConSolnZoom.eps')
-    plt.show()
-
-
-
-'''
-    fig, ax1 = plt.subplots()
-    left, bottom, width, height = [0.23, 0.2, 0.2, 0.2]
-    ax2 = fig.add_axes([left, bottom, width, height])
-
-    ax1.set_xlabel('T$\mathregular{_{eff}}$ [kK]')
-    ax1.set_ylabel('$\log$(g/cm s$^2$)')
-    ax1.invert_xaxis()
-    ax2.invert_xaxis()
-    
-    ax1.plot(teff,logg,'.k',markersize=0.1)
-    #ax2.plot(teff,logg,'.k',markersize=0.1)
-    #ax2.set_xlim([25.692, 24.877])
-    #ax2.set_ylim([5.4, 5.6])
-    for i in ModelDict:
-        CustomPeriod = ModelDict[i]
-        sdBObj = sdBMESAGYRE(Target,CustomPeriodList=CustomPeriod,NModels=1000,HowBad=150)
-        pt,ptz,trz = sdBObj.CheckModels()
-        ax1.plot(trz.teff,trz.logg,'ow',markeredgecolor='black') #unconstrained
-        ax2.plot(trz.teff,trz.logg,'ow',markeredgecolor='black') #unconstrained
+        ModelNumber = 'model6' #model6,
+        SelectedModel = fitdata[(fitdata['mi']==1.45)&(fitdata['z']==0.010)&(fitdata['menv']==0.0022)&(fitdata['yc']==0.1)]
         
-    plt.savefig(f'{Star}ConSoln.png')
-    plt.savefig(f'{Star}ConSoln.eps')
+
+    fig, ax = plt.subplots()
+    # choose one model
+    for i in ModelDict[ModelNumber]:
+        ModelPeriod = SelectedModel[f'f{int(np.round(i))}'].values 
+        #plt.stem(ModelPeriod,0.1, markerfmt=' ',linefmt='grey', bottom=0.3,basefmt=' ')
+        plt.axvline(x=ModelPeriod,color='grey',alpha=0.5)
+        plt.stem(i,0.3, markerfmt=' ',linefmt='black', bottom=0.6,basefmt=' ')
+    
+    plt.ylim(0.1,0.5)
+    ax.axes.yaxis.set_visible(False)
+    plt.text(2400, 0.2, 'model', rotation=90)
+    plt.text(2400, 0.35, 'observation', rotation=90) 
+    plt.savefig(f'{Star}GYREPlot.png')
+    plt.savefig(f'{Star}GYREPlot.eps')
     plt.show()
-'''
+
+
