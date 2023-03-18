@@ -170,8 +170,9 @@ if __name__=="__main__":
     
     plt.ylim(0.1,0.5)
     ax.axes.yaxis.set_visible(False)
-    plt.text(2400, 0.2, 'model', rotation=90)
-    plt.text(2400, 0.35, 'observation', rotation=90) 
+    plt.text(2400, 0.2, 'Model', rotation=90)
+    plt.text(2400, 0.35, 'Observation', rotation=90) 
+    plt.xlabel(r'Period$\,$[s]')
     plt.savefig(f'{Star}GYREPlot.png')
     plt.savefig(f'{Star}GYREPlot.eps')
     plt.show()

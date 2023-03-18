@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 import warnings
 import matplotlib.pyplot as plt
-
+from matplotlib.patches import Rectangle
 warnings.filterwarnings("ignore")  
 
 class sdBMESAGYRE():
@@ -46,7 +46,7 @@ class sdBMESAGYRE():
         ptz1.reset_index(drop=True)
         ptz2 = ptz1[ptz1.total_merit<=(self.HowBad/100.)*ptz1.total_merit.min()].reset_index(drop=True) # taking models up to 150% of the minimum merit
         print(' Displaying best models upto 1.5x over all models : ')
-        print(ptz2)
+        #print(ptz2)
         
         trz1 = trz[['mi', 'menv', 'mass', 'convcorem','radius','z', 'FeH','yc', 'age','since_zaehb','teff','logg','luminosity','total_merit']]
         trz1.reset_index(drop=True)
@@ -56,7 +56,7 @@ class sdBMESAGYRE():
         return pt[:10],ptz2[:10],trz2[:10]
 
 if __name__=="__main__":
-    Star = 'KIC11179657' #'KIC11179657' #'KIC2991403'# 'B4'#'B3' # #
+    Star = 'KIC2991403' #'KIC11179657' #'KIC2991403'# 'B4'#'B3' # #
 
     if Star=='B3':
         #B3 model dictionary
@@ -148,49 +148,63 @@ if __name__=="__main__":
 
     fig, ax1 = plt.subplots()
 
-    ax1.plot(teff,logg,'.k',markersize=0.1)
+    ax1.plot(teff,logg,'.k',markersize=0.2)
+    
     for i in ModelDict:
         CustomPeriod = ModelDict[i]
         sdBObj = sdBMESAGYRE(Target,CustomPeriodList=CustomPeriod,NModels=1000,HowBad=150)
         pt,ptz,trz = sdBObj.CheckModels()
-        ax1.plot(trz.teff,trz.logg,'ow',markeredgecolor='black') #unconstrained
+        ax1.plot(trz.teff,trz.logg,'ow',markeredgecolor='black',markersize=4) #unconstrained
         
     if Star == 'B3':
-        ax1.set_xlim([24.6,22.59])
-        ax1.set_ylim([5.07, 5.58])  
+        ax1.set_xlim([24.60,22.60])
+        ax1.set_ylim([5.1, 5.6])  
         obsTeff = 23.540
         obsTefferr = 0.210
         obslogg = 5.311
         obsloggerr = 0.035 
-        ax1.errorbar(obsTeff,obslogg,xerr=obsTefferr,yerr=obsloggerr,fmt='o',color='k',markersize=8,capthick=0.5,capsize=10,label='_nolegend_',alpha=0.6)
+
+        #ax1.errorbar(obsTeff,obslogg,xerr=obsTefferr,yerr=obsloggerr,fmt='o',color='k',markersize=8,capthick=0.5,capsize=10,label='_nolegend_',alpha=0.6)
+        ax1 = plt.gca()
+        rect = Rectangle((obsTeff-obsTefferr,obslogg-obsloggerr),2*obsTefferr,2*obsloggerr,linewidth=1,edgecolor='k',facecolor='none')
+        ax1.add_patch(rect)
     elif Star == 'B4':
-        ax1.set_xlim([26.38,24.31])
-        ax1.set_ylim([5.2, 5.72])    
+        ax1.set_xlim([26.40,24.30])
+        ax1.set_ylim([5.20, 5.70])    
         obsTeff = 25.290
         obsTefferr = 0.300
         obslogg = 5.510
         obsloggerr = 0.043 
-        ax1.errorbar(obsTeff,obslogg,xerr=obsTefferr,yerr=obsloggerr,fmt='o',color='k',markersize=8,capthick=0.5,capsize=10,label='_nolegend_',alpha=0.6)
+        #ax1.errorbar(obsTeff,obslogg,xerr=obsTefferr,yerr=obsloggerr,fmt='o',color='k',markersize=8,capthick=0.5,capsize=10,label='_nolegend_',alpha=0.6)
+        ax1 = plt.gca()
+        rect = Rectangle((obsTeff-obsTefferr,obslogg-obsloggerr),2*obsTefferr,2*obsloggerr,linewidth=1,edgecolor='k',facecolor='none')
+        ax1.add_patch(rect)
     elif Star == 'KIC2991403': 
-        ax1.set_xlim([ 26.0, 28.35])
-        ax1.set_ylim([5.3,5.79])    
+        ax1.set_xlim([28.4,26.0])
+        ax1.set_ylim([5.30,5.80])    
         obsTeff = 27.300
         obsTefferr = 0.200
         obslogg = 5.430
         obsloggerr = 0.03 
-        ax1.errorbar(obsTeff,obslogg,xerr=obsTefferr,yerr=obsloggerr,fmt='o',color='k',markersize=8,capthick=0.5,capsize=10,label='_nolegend_',alpha=0.6)
+        #ax1.errorbar(obsTeff,obslogg,xerr=obsTefferr,yerr=obsloggerr,fmt='o',color='k',markersize=8,capthick=0.5,capsize=10,label='_nolegend_',alpha=0.6)
+        ax1 = plt.gca()
+        rect = Rectangle((obsTeff-obsTefferr,obslogg-obsloggerr),2*obsTefferr,2*obsloggerr,linewidth=1,edgecolor='k',facecolor='none')
+        ax1.add_patch(rect)
     elif Star == 'KIC11179657':
-        ax1.set_xlim([23.77,26.9])
-        ax1.set_ylim([5.0, 5.46])    
+        ax1.set_xlim([27.0,23.8])
+        ax1.set_ylim([5.0, 5.5])    
         obsTeff = 26.0
         obsTefferr = 0.8
         obslogg = 5.14
         obsloggerr = 0.13 
-        ax1.errorbar(obsTeff,obslogg,xerr=obsTefferr,yerr=obsloggerr,fmt='o',color='k',markersize=8,capthick=0.5,capsize=10,label='_nolegend_',alpha=0.6)
-    
+        #ax1.errorbar(obsTeff,obslogg,xerr=obsTefferr,yerr=obsloggerr,fmt='o',color='k',markersize=8,capthick=0.5,capsize=10,label='_nolegend_',alpha=0.6)
+        ax1 = plt.gca()
+        rect = Rectangle((obsTeff-obsTefferr,obslogg-obsloggerr),2*obsTefferr,2*obsloggerr,linewidth=1,edgecolor='k',facecolor='none')
+        ax1.add_patch(rect)
+
     ax1.set_xlabel('T$\mathregular{_{eff}}$ [kK]')
-    ax1.set_ylabel('$\log$(g/cm s$^2$)')
-    ax1.invert_xaxis()
+    ax1.set_ylabel(r'$\log$(g/cm s$^{-2}$)')
+    #ax1.invert_xaxis()
     ax1.invert_yaxis()    
     plt.savefig(f'{Star}ConSolnZoom.png')
     plt.savefig(f'{Star}ConSolnZoom.eps')
